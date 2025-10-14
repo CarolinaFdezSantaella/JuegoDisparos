@@ -24,6 +24,7 @@ const GameOverScreen: FC<GameOverScreenProps> = ({ onRestart, score, didWin }) =
           height={200}
           data-ai-hint={image.imageHint}
           className="mb-4 rounded-lg"
+          unoptimized
         />
       )}
       <h2 className={`text-6xl font-bold font-headline mb-4 ${titleColor}`}>{title}</h2>

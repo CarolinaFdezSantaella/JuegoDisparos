@@ -57,12 +57,7 @@ export class Game {
     }
 
     private spawnOpponentFleet(): void {
-        for (let i = 0; i < this.opponentsToSpawn; i++) {
-            setTimeout(() => this.spawnOpponent(), i * 500);
-        }
-    }
-
-    private spawnOpponent(): void {
+        this.opponents = [];
         const opponent = new Opponent(this.canvas, () => {
             this.score += 1;
             this.updateScore(this.score);
@@ -71,6 +66,7 @@ export class Game {
     }
 
     private spawnBoss(): void {
+        this.opponents = [];
         const boss = new Boss(this.canvas, () => {
             this.score += 10; // More points for the boss
             this.updateScore(this.score);
@@ -113,13 +109,7 @@ export class Game {
         const aliveOpponents = this.opponents.filter(opponent => !opponent.dead);
 
         if (this.opponents.length > 0 && aliveOpponents.length === 0 && this.opponents.some(o => !(o instanceof Boss))) {
-            if (this.opponentsToSpawn === 1) { // Transition to boss
-                this.opponents = [];
-                this.spawnBoss();
-            } else { // Next wave
-                this.opponents = [];
-                this.spawnOpponentFleet();
-            }
+            this.spawnBoss();
         } else if (this.opponents.length > 0 && aliveOpponents.length === 0 && this.opponents.some(o => o instanceof Boss)) {
             // Game won
             this.gameWon = true;

@@ -1,30 +1,6 @@
 {
   "placeholderImages": [
     {
-      "id": "player",
-      "description": "The player's spaceship.",
-      "imageUrl": "https://picsum.photos/seed/playership/100/100",
-      "imageHint": "blue spaceship"
-    },
-    {
-      "id": "opponent",
-      "description": "The standard enemy spaceship.",
-      "imageUrl": "https://picsum.photos/seed/opponentrship/100/100",
-      "imageHint": "orange spaceship"
-    },
-    {
-      "id": "star",
-      "description": "The explosion that appears when an opponent is defeated.",
-      "imageUrl": "https://picsum.photos/seed/explosion/100/100",
-      "imageHint": "yellow explosion"
-    },
-    {
-      "id": "boss",
-      "description": "The final boss mothership.",
-      "imageUrl": "https://picsum.photos/seed/boss-mothership/120/120",
-      "imageHint": "purple mothership"
-    },
-    {
       "id": "gameOver",
       "description": "The game over screen image with a city.",
       "imageUrl": "https://picsum.photos/seed/gameovercity/400/200",
