@@ -92,33 +92,45 @@ export default function GameCanvas() {
 
   useEffect(() => {
     const game = gameInstanceRef.current;
-    const handleKeyDown = (e: KeyboardEvent) => game?.setKeyPressed(e.code);
-    const handleKeyUp = () => game?.setKeyPressed(null);
-    const handleTouchStart = (e: TouchEvent) => game?.setTouchDown(e.touches[0].clientX);
-    const handleTouchMove = (e: TouchEvent) => game?.setTouchDown(e.touches[0].clientX);
-    const handleTouchEnd = () => game?.setTouchDown(null);
+    if (!game) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => game.setKeyPressed(e.code);
+    const handleKeyUp = () => game.setKeyPressed(null);
+    const handleTouchStart = (e: TouchEvent) => {
+        e.preventDefault();
+        game.setTouchDown(e.touches[0].clientX)
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+        e.preventDefault();
+        game.setTouchDown(e.touches[0].clientX)
+    };
+    const handleTouchEnd = (e: TouchEvent) => {
+        e.preventDefault();
+        game.setTouchDown(null)
+    };
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
-    window.addEventListener('touchstart', handleTouchStart);
-    window.addEventListener('touchmove', handleTouchMove);
-    window.addEventListener('touchend', handleTouchEnd);
+    canvasRef.current?.addEventListener('touchstart', handleTouchStart);
+    canvasRef.current?.addEventListener('touchmove', handleTouchMove);
+    canvasRef.current?.addEventListener('touchend', handleTouchEnd);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
+      canvasRef.current?.removeEventListener('touchstart', handleTouchStart);
+      canvasRef.current?.removeEventListener('touchmove', handleTouchMove);
+      canvasRef.current?.removeEventListener('touchend', handleTouchEnd);
       if(animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
       }
+      gameInstanceRef.current?.endGame();
     };
-  }, [gameState]);
+  }, [gameState, startGame]);
 
 
   return (
-    <div className="w-full h-full bg-background relative">
+    <div className="w-full h-full bg-background relative touch-none">
       <canvas ref={canvasRef} className="w-full h-full" />
       {gameState === 'playing' && <GameHud score={score} lives={lives} />}
       {gameState === 'start' && <StartScreen onStart={startGame} loading={!isReady} />}

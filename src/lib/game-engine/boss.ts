@@ -7,11 +7,14 @@ export class Boss extends Opponent {
         const bossDeadImage = PlaceHolderImages.find(img => img.id === 'star');
         
         // Boss is larger than a normal opponent
-        const bossSize = canvas.width / 12;
+        const bossSize = canvas.width / 8;
 
         super(canvas, onScore, bossSize, bossImage?.imageUrl || '', bossDeadImage?.imageUrl || '');
+        
+        this.x = canvas.width / 2 - bossSize / 2;
+        this.y = bossSize / 4;
 
-        // Boss moves at double the speed of a normal opponent
-        this.speed = (canvas.width / 100) * 2;
+        // Boss moves slower
+        this.speed = (canvas.width / 400);
     }
 }

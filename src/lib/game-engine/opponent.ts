@@ -6,6 +6,8 @@ export class Opponent extends Character {
     private onScore: () => void;
     private direction: number = 1;
     private canvas: HTMLCanvasElement;
+    private removeTimer: NodeJS.Timeout | null = null;
+
 
     constructor(
         canvas: HTMLCanvasElement, 
@@ -26,11 +28,12 @@ export class Opponent extends Character {
             deadImageSrc || starImage?.imageUrl || ''
         );
         this.canvas = canvas;
-        this.speed = canvas.width / 100;
+        this.speed = canvas.width / 200;
         this.onScore = onScore;
     }
 
     update(): void {
+        if (this.dead) return;
         this.x += this.speed * this.direction;
         if (this.x <= 0 || this.x + this.width >= this.canvas.width) {
             this.direction *= -1;

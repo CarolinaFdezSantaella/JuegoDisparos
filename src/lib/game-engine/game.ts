@@ -3,8 +3,6 @@ import { Opponent } from './opponent';
 import { Boss } from './boss';
 import { Shot } from './shot';
 
-const GAME_SPEED_MS = 50; // Approx 20 FPS
-
 export type GameState = 'start' | 'playing' | 'win' | 'game_over';
 
 export class Game {
@@ -43,6 +41,9 @@ export class Game {
         this.updateScore = updateScore;
         this.updateLives = updateLives;
         this.setGameState = setGameState;
+
+        this.updateScore(this.score);
+        this.updateLives(this.player.lives);
     }
 
     public start(): void {
@@ -70,14 +71,14 @@ export class Game {
 
     private spawnBoss(): void {
         const boss = new Boss(this.canvas, () => {
-            this.score += 1;
+            this.score += 10; // More points for the boss
             this.updateScore(this.score);
         });
         this.opponents.push(boss);
     }
 
     private addShot(): void {
-        if (this.player.canShoot() && this.gameState === 'playing') {
+        if (this.player.canShoot() && this.gameState === 'playing' && !this.player.dead) {
             this.shots.push(new Shot(this.player.x + this.player.width / 2 - 2.5, this.player.y, this.canvas.height));
             this.player.resetShotCooldown();
         }
@@ -108,24 +109,16 @@ export class Game {
         
         this.checkCollisions();
         
-        this.opponents = this.opponents.filter(opponent => {
-            if (opponent.dead) {
-                setTimeout(() => {
-                    const index = this.opponents.indexOf(opponent);
-                    if (index > -1) {
-                        this.opponents.splice(index, 1);
-                    }
-                }, 1000); // Time to see the star
-                return true;
-            }
-            return true;
-        });
+        const aliveOpponents = this.opponents.filter(opponent => !opponent.dead);
 
-        if (this.opponents.filter(o => !o.dead).length === 0) {
+        if (this.opponents.length > 0 && aliveOpponents.length === 0) {
             if (this.opponents.some(o => o instanceof Boss)) {
+                 // All opponents including boss are dead
                 this.gameWon = true;
                 this.endGame();
             } else {
+                 // All normal opponents are dead, spawn boss
+                this.opponents = [];
                 this.spawnBoss();
             }
         }
@@ -155,6 +148,7 @@ export class Game {
             if (!opponent.dead) {
                 this.shots.forEach(shot => {
                     if (
+                        !shot.isOffScreen() &&
                         shot.x < opponent.x + opponent.width &&
                         shot.x + shot.width > opponent.x &&
                         shot.y < opponent.y + opponent.height &&
@@ -171,6 +165,7 @@ export class Game {
         if (!this.player.dead && !this.player.isInvincible()) {
              this.opponentShots.forEach(shot => {
                 if (
+                    !shot.isOffScreen() &&
                     shot.x < this.player.x + this.player.width &&
                     shot.x + shot.width > this.player.x &&
                     shot.y < this.player.y + this.player.height &&
@@ -178,7 +173,6 @@ export class Game {
                 ) {
                     shot.y = this.canvas.height + 100; // remove shot
                     this.player.collide();
-                    this.updateLives(this.player.lives);
                 }
             });
         }
