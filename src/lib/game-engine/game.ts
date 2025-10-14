@@ -20,7 +20,7 @@ export class Game {
 
     private keyPressed: string | null = null;
     private touchDownX: number | null = null;
-    private opponentsToSpawn: number = 5;
+    private opponentsToSpawn: number = 1;
 
     // Callbacks to update React state
     private updateScore: (score: number) => void;

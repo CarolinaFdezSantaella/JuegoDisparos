@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "player",
-      "description": "The player's square ship.",
-      "imageUrl": "https://picsum.photos/seed/player/100/100",
-      "imageHint": "blue square"
+      "description": "The player's triangle ship.",
+      "imageUrl": "https://picsum.photos/seed/playertriangle/100/100",
+      "imageHint": "blue triangle"
     },
     {
       "id": "opponent",
