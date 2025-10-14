@@ -10,6 +10,7 @@ export class Player extends Character {
     private lastShotTime: number = 0;
     private addShotCallback: () => void;
     private endGameCallback: () => void;
+    private canvas: HTMLCanvasElement;
 
     constructor(
         canvas: HTMLCanvasElement, 
@@ -32,6 +33,7 @@ export class Player extends Character {
         this.lives = initialLives;
         this.addShotCallback = addShotCallback;
         this.endGameCallback = endGameCallback;
+        this.canvas = canvas;
     }
     
     update(updateLives: (lives: number) => void): void {
@@ -56,6 +58,7 @@ export class Player extends Character {
         this.dead = false;
         this.isRespawning = false;
         this.image = this.myImage;
+        this.x = Math.random() * (this.canvas.width - this.width);
         updateLives(this.lives);
     }
     

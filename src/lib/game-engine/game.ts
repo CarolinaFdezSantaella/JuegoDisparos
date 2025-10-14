@@ -12,7 +12,7 @@ export class Game {
     private ctx: CanvasRenderingContext2D;
     
     public player: Player;
-    public opponent: Opponent | Boss | null = null;
+    public opponents: (Opponent | Boss)[] = [];
     public shots: Shot[] = [];
     public opponentShots: Shot[] = [];
 
@@ -22,6 +22,7 @@ export class Game {
 
     private keyPressed: string | null = null;
     private touchDownX: number | null = null;
+    private opponentsToSpawn: number = 5;
 
     // Callbacks to update React state
     private updateScore: (score: number) => void;
@@ -50,21 +51,29 @@ export class Game {
         this.player.x = this.canvas.width / 2 - this.player.width / 2;
         this.player.y = this.canvas.height - this.player.height - 10;
         this.gameState = 'playing';
-        this.spawnOpponent();
+        this.spawnOpponentFleet();
+    }
+
+    private spawnOpponentFleet(): void {
+        for (let i = 0; i < this.opponentsToSpawn; i++) {
+            setTimeout(() => this.spawnOpponent(), i * 500);
+        }
     }
 
     private spawnOpponent(): void {
-        this.opponent = new Opponent(this.canvas, () => {
+        const opponent = new Opponent(this.canvas, () => {
             this.score += 1;
             this.updateScore(this.score);
         });
+        this.opponents.push(opponent);
     }
 
     private spawnBoss(): void {
-        this.opponent = new Boss(this.canvas, () => {
+        const boss = new Boss(this.canvas, () => {
             this.score += 1;
             this.updateScore(this.score);
         });
+        this.opponents.push(boss);
     }
 
     private addShot(): void {
@@ -74,9 +83,9 @@ export class Game {
         }
     }
 
-    private addOpponentShot(): void {
-        if (this.opponent && !this.opponent.dead && Math.random() < 0.02) {
-             this.opponentShots.push(new Shot(this.opponent.x + this.opponent.width / 2, this.opponent.y + this.opponent.height, this.canvas.height, true));
+    private addOpponentShot(opponent: Opponent | Boss): void {
+        if (opponent && !opponent.dead && Math.random() < 0.02) {
+             this.opponentShots.push(new Shot(opponent.x + opponent.width / 2, opponent.y + opponent.height, this.canvas.height, true));
         }
     }
 
@@ -92,12 +101,35 @@ export class Game {
         this.opponentShots.forEach(shot => shot.update());
         this.opponentShots = this.opponentShots.filter(shot => !shot.isOffScreen());
 
-        if (this.opponent) {
-            this.opponent.update();
-            this.addOpponentShot();
-        }
+        this.opponents.forEach(opponent => {
+            opponent.update();
+            this.addOpponentShot(opponent);
+        });
         
         this.checkCollisions();
+        
+        this.opponents = this.opponents.filter(opponent => {
+            if (opponent.dead) {
+                setTimeout(() => {
+                    const index = this.opponents.indexOf(opponent);
+                    if (index > -1) {
+                        this.opponents.splice(index, 1);
+                    }
+                }, 1000); // Time to see the star
+                return true;
+            }
+            return true;
+        });
+
+        if (this.opponents.filter(o => !o.dead).length === 0) {
+            if (this.opponents.some(o => o instanceof Boss)) {
+                this.gameWon = true;
+                this.endGame();
+            } else {
+                this.spawnBoss();
+            }
+        }
+
         this.draw();
     }
 
@@ -118,21 +150,22 @@ export class Game {
     }
 
     private checkCollisions(): void {
-        // Player shots hitting opponent
-        if (this.opponent && !this.opponent.dead) {
-            this.shots.forEach(shot => {
-                if (
-                    shot.x < this.opponent!.x + this.opponent!.width &&
-                    shot.x + shot.width > this.opponent!.x &&
-                    shot.y < this.opponent!.y + this.opponent!.height &&
-                    shot.y + shot.height > this.opponent!.y
-                ) {
-                    shot.y = -100; // remove shot
-                    this.opponent!.collide();
-                    this.removeOpponent();
-                }
-            });
-        }
+        // Player shots hitting opponents
+        this.opponents.forEach(opponent => {
+            if (!opponent.dead) {
+                this.shots.forEach(shot => {
+                    if (
+                        shot.x < opponent.x + opponent.width &&
+                        shot.x + shot.width > opponent.x &&
+                        shot.y < opponent.y + opponent.height &&
+                        shot.y + shot.height > opponent.y
+                    ) {
+                        shot.y = -100; // remove shot
+                        opponent.collide();
+                    }
+                });
+            }
+        });
 
         // Opponent shots hitting player
         if (!this.player.dead && !this.player.isInvincible()) {
@@ -151,21 +184,6 @@ export class Game {
         }
     }
     
-    private removeOpponent(): void {
-        setTimeout(() => {
-            if (this.opponent instanceof Boss) {
-                // Boss defeated
-                this.opponent = null;
-                this.gameWon = true;
-                this.endGame();
-            } else {
-                // Regular opponent defeated, spawn boss
-                this.opponent = null;
-                this.spawnBoss();
-            }
-        }, 1000); // Time to see the star
-    }
-
     public endGame(): void {
         if (this.gameState !== 'playing') return;
         
@@ -176,7 +194,7 @@ export class Game {
     private draw(): void {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.player.draw(this.ctx);
-        this.opponent?.draw(this.ctx);
+        this.opponents.forEach(opponent => opponent.draw(this.ctx));
         this.shots.forEach(shot => shot.draw(this.ctx));
         this.opponentShots.forEach(shot => shot.draw(this.ctx));
     }
