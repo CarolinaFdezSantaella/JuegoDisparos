@@ -17,74 +17,60 @@ export default function GameCanvas() {
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(PLAYER_LIVES);
 
-  const handleGameStateChange = useCallback((newState: GameState) => {
-    setGameState(newState);
-  }, []);
-
-  const handleScoreChange = useCallback((newScore: number) => {
-    setScore(newScore);
-  }, []);
-  
-  const handleLivesChange = useCallback((newLives: number) => {
-    setLives(newLives);
-  }, []);
-  
-  const gameLoop = useCallback(() => {
-    if (!gameInstanceRef.current) return;
-    gameInstanceRef.current.update();
-    animationFrameId.current = requestAnimationFrame(gameLoop);
-  }, []);
-
   const stopGame = useCallback(() => {
     if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-        animationFrameId.current = 0;
+      cancelAnimationFrame(animationFrameId.current);
+      animationFrameId.current = 0;
     }
     if (gameInstanceRef.current) {
-        gameInstanceRef.current.endGame(true);
-        gameInstanceRef.current = null;
+        // We don't nullify the ref here, endGame handles state.
+        gameInstanceRef.current.endGame(true); 
     }
   },[]);
 
+  const gameLoop = useCallback(() => {
+    if (gameInstanceRef.current && gameInstanceRef.current.gameState === 'playing') {
+      gameInstanceRef.current.update();
+      animationFrameId.current = requestAnimationFrame(gameLoop);
+    }
+  }, []);
 
   const startGame = useCallback(() => {
     if (!canvasRef.current) return;
     
+    // Ensure any previous game instance is fully stopped.
     stopGame();
-    
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     setScore(0);
     setLives(PLAYER_LIVES);
+    setGameState('playing');
     
     const game = new Game(
       canvas,
-      handleScoreChange,
-      handleLivesChange,
-      handleGameStateChange,
+      (newScore) => setScore(newScore),
+      (newLives) => setLives(newLives),
+      (newState) => setGameState(newState),
       PLAYER_LIVES
     );
     gameInstanceRef.current = game;
     game.start();
-    setGameState('playing');
+    
+    // Start the loop
+    animationFrameId.current = requestAnimationFrame(gameLoop);
 
-  }, [stopGame, handleGameStateChange, handleScoreChange, handleLivesChange]);
+  }, [stopGame, gameLoop]);
+
 
   useEffect(() => {
-    if (gameState === 'playing') {
-      if(animationFrameId.current === 0) {
-        animationFrameId.current = requestAnimationFrame(gameLoop);
-      }
-    } else {
-      stopGame();
-    }
-
+    // This effect handles cleanup when the component unmounts.
     return () => {
       stopGame();
     };
-  }, [gameState, gameLoop, stopGame]);
+  }, [stopGame]);
 
 
   useEffect(() => {
