@@ -8,18 +8,18 @@ export class Player extends Character {
     public lives: number;
     private isRespawning: boolean = false;
     private lastShotTime: number = 0;
-    private endGameCallback: () => void;
+    private endGameCallback: (force: boolean) => void;
     private canvas: HTMLCanvasElement;
 
     constructor(
         canvas: HTMLCanvasElement, 
         initialLives: number,
         addShotCallback: () => void,
-        endGameCallback: () => void
+        endGameCallback: (force: boolean) => void
     ) {
         const playerImage = PlaceHolderImages.find(img => img.id === 'player');
         const starImage = PlaceHolderImages.find(img => img.id === 'star');
-        const playerSize = canvas.width / 20;
+        const playerSize = canvas.width / 15;
 
         super(
             canvas.width / 2 - playerSize / 2, 
@@ -40,7 +40,7 @@ export class Player extends Character {
             if (this.lives > 0) {
                 setTimeout(() => this.respawn(updateLives), RESPAWN_TIME_MS);
             } else {
-                this.endGameCallback();
+                this.endGameCallback(true);
             }
         }
     }

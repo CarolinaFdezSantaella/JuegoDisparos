@@ -2,39 +2,39 @@
   "placeholderImages": [
     {
       "id": "player",
-      "description": "The player's triangle ship.",
-      "imageUrl": "https://picsum.photos/seed/playertriangle/100/100",
-      "imageHint": "blue triangle"
+      "description": "The player's spaceship.",
+      "imageUrl": "https://picsum.photos/seed/playership/100/100",
+      "imageHint": "blue spaceship"
     },
     {
       "id": "opponent",
-      "description": "The standard triangle opponent.",
-      "imageUrl": "https://picsum.photos/seed/opponent/100/100",
-      "imageHint": "orange triangle"
+      "description": "The standard enemy spaceship.",
+      "imageUrl": "https://picsum.photos/seed/opponentrship/100/100",
+      "imageHint": "orange spaceship"
     },
     {
       "id": "star",
-      "description": "The star shape that appears when an opponent is defeated.",
-      "imageUrl": "https://picsum.photos/seed/star/100/100",
-      "imageHint": "yellow star"
+      "description": "The explosion that appears when an opponent is defeated.",
+      "imageUrl": "https://picsum.photos/seed/explosion/100/100",
+      "imageHint": "yellow explosion"
     },
     {
       "id": "boss",
-      "description": "The final pentagon boss.",
-      "imageUrl": "https://picsum.photos/seed/boss/120/120",
-      "imageHint": "purple pentagon"
+      "description": "The final boss mothership.",
+      "imageUrl": "https://picsum.photos/seed/boss-mothership/120/120",
+      "imageHint": "purple mothership"
     },
     {
       "id": "gameOver",
-      "description": "The game over screen image.",
-      "imageUrl": "https://picsum.photos/seed/gameover/400/200",
-      "imageHint": "text gameover"
+      "description": "The game over screen image with a city.",
+      "imageUrl": "https://picsum.photos/seed/gameovercity/400/200",
+      "imageHint": "city skyline night"
     },
     {
       "id": "youWin",
-      "description": "The you win screen image.",
-      "imageUrl": "https://picsum.photos/seed/youwin/400/200",
-      "imageHint": "text youwin"
+      "description": "The you win screen image with a celebrating city.",
+      "imageUrl": "https://picsum.photos/seed/youwincity/400/200",
+      "imageHint": "city fireworks"
     }
   ]
 }

@@ -51,6 +51,7 @@ export class Game {
         this.canvas.height = this.canvas.clientHeight;
         this.player.x = this.canvas.width / 2 - this.player.width / 2;
         this.player.y = this.canvas.height - this.player.height - 10;
+        this.setGameState('playing');
         this.gameState = 'playing';
         this.spawnOpponentFleet();
     }
@@ -111,16 +112,18 @@ export class Game {
         
         const aliveOpponents = this.opponents.filter(opponent => !opponent.dead);
 
-        if (this.opponents.length > 0 && aliveOpponents.length === 0) {
-            if (this.opponents.some(o => o instanceof Boss)) {
-                 // All opponents including boss are dead
-                this.gameWon = true;
-                this.endGame();
-            } else {
-                 // All normal opponents are dead, spawn boss
+        if (this.opponents.length > 0 && aliveOpponents.length === 0 && this.opponents.some(o => !(o instanceof Boss))) {
+            if (this.opponentsToSpawn === 1) { // Transition to boss
                 this.opponents = [];
                 this.spawnBoss();
+            } else { // Next wave
+                this.opponents = [];
+                this.spawnOpponentFleet();
             }
+        } else if (this.opponents.length > 0 && aliveOpponents.length === 0 && this.opponents.some(o => o instanceof Boss)) {
+            // Game won
+            this.gameWon = true;
+            this.endGame();
         }
 
         this.draw();
@@ -178,8 +181,8 @@ export class Game {
         }
     }
     
-    public endGame(): void {
-        if (this.gameState !== 'playing') return;
+    public endGame(force: boolean = false): void {
+        if (this.gameState !== 'playing' && !force) return;
         
         this.gameState = this.gameWon ? 'win' : 'game_over';
         this.setGameState(this.gameState);
