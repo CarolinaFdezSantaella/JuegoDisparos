@@ -58,8 +58,21 @@ export default function GameCanvas() {
     });
   }, []);
   
+  const gameLoop = useCallback(() => {
+    if (gameInstanceRef.current?.gameState === 'playing') {
+      gameInstanceRef.current.update();
+      animationFrameId.current = requestAnimationFrame(gameLoop);
+    }
+  }, []);
+
   const startGame = useCallback(() => {
     if (!canvasRef.current || !isReady) return;
+
+    if (gameInstanceRef.current) {
+      gameInstanceRef.current.endGame();
+      cancelAnimationFrame(animationFrameId.current);
+    }
+    
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -78,17 +91,17 @@ export default function GameCanvas() {
     game.start();
     setGameState('playing');
 
-    const gameLoop = () => {
-      if (gameInstanceRef.current && gameInstanceRef.current.gameState === 'playing') {
-        gameInstanceRef.current.update();
-        animationFrameId.current = requestAnimationFrame(gameLoop);
-      }
-    };
-    
-    cancelAnimationFrame(animationFrameId.current);
-    animationFrameId.current = requestAnimationFrame(gameLoop);
-
   }, [isReady, handleGameStateChange, handleScoreChange, handleLivesChange]);
+
+  useEffect(() => {
+    if (gameState === 'playing' && gameInstanceRef.current) {
+      animationFrameId.current = requestAnimationFrame(gameLoop);
+    } else {
+      cancelAnimationFrame(animationFrameId.current);
+    }
+    return () => cancelAnimationFrame(animationFrameId.current);
+  }, [gameState, gameLoop]);
+
 
   useEffect(() => {
     const game = gameInstanceRef.current;
@@ -111,22 +124,24 @@ export default function GameCanvas() {
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
-    canvasRef.current?.addEventListener('touchstart', handleTouchStart);
-    canvasRef.current?.addEventListener('touchmove', handleTouchMove);
-    canvasRef.current?.addEventListener('touchend', handleTouchEnd);
+    const canvas = canvasRef.current;
+    canvas?.addEventListener('touchstart', handleTouchStart);
+    canvas?.addEventListener('touchmove', handleTouchMove);
+    canvas?.addEventListener('touchend', handleTouchEnd);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
-      canvasRef.current?.removeEventListener('touchstart', handleTouchStart);
-      canvasRef.current?.removeEventListener('touchmove', handleTouchMove);
-      canvasRef.current?.removeEventListener('touchend', handleTouchEnd);
+      canvas?.removeEventListener('touchstart', handleTouchStart);
+      canvas?.removeEventListener('touchmove', handleTouchMove);
+      canvas?.removeEventListener('touchend', handleTouchEnd);
+      
+      gameInstanceRef.current?.endGame();
       if(animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
       }
-      gameInstanceRef.current?.endGame();
     };
-  }, [gameState, startGame]);
+  }, [gameState]);
 
 
   return (
