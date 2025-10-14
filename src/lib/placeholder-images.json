@@ -1,3 +1,40 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "player",
+      "description": "The player's square ship.",
+      "imageUrl": "https://picsum.photos/seed/player/100/100",
+      "imageHint": "blue square"
+    },
+    {
+      "id": "opponent",
+      "description": "The standard triangle opponent.",
+      "imageUrl": "https://picsum.photos/seed/opponent/100/100",
+      "imageHint": "orange triangle"
+    },
+    {
+      "id": "star",
+      "description": "The star shape that appears when an opponent is defeated.",
+      "imageUrl": "https://picsum.photos/seed/star/100/100",
+      "imageHint": "yellow star"
+    },
+    {
+      "id": "boss",
+      "description": "The final pentagon boss.",
+      "imageUrl": "https://picsum.photos/seed/boss/120/120",
+      "imageHint": "purple pentagon"
+    },
+    {
+      "id": "gameOver",
+      "description": "The game over screen image.",
+      "imageUrl": "https://picsum.photos/seed/gameover/400/200",
+      "imageHint": "text gameover"
+    },
+    {
+      "id": "youWin",
+      "description": "The you win screen image.",
+      "imageUrl": "https://picsum.photos/seed/youwin/400/200",
+      "imageHint": "text youwin"
+    }
+  ]
 }
