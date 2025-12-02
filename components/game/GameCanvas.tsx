@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Canvas from 'react-native-canvas';
-import { Game, GameState } from '../lib/game-engine/Game';
-import GameHud from './game/ui/GameHud';
-import StartScreen from './game/ui/StartScreen';
-import GameOverScreen from './game/ui/GameOverScreen';
+import { Game, GameState } from '../../lib/game-engine/Game';
+import GameHud from './ui/GameHud';
+import StartScreen from './ui/StartScreen';
+import GameOverScreen from './ui/GameOverScreen';
 
 const PLAYER_LIVES = 3;
 
@@ -48,9 +48,9 @@ export default function GameCanvas() {
 
     const game = new Game(
       canvas,
-      (newScore) => setScore(newScore),
-      (newLives) => setLives(newLives),
-      (newState) => setGameState(newState),
+      (newScore: number) => setScore(newScore),
+      (newLives: number) => setLives(newLives),
+      (newState: GameState) => setGameState(newState),
       PLAYER_LIVES
     );
     gameInstanceRef.current = game;

@@ -1,4 +1,4 @@
-import { Entity } from './entity';
+import { Entity } from './Entity';
 
 export class Shot extends Entity {
     private speed: number;
@@ -14,7 +14,7 @@ export class Shot extends Entity {
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
-        ctx.fillStyle = this.isOpponentShot ? 'hsl(var(--destructive))' : 'hsl(var(--primary))';
+        ctx.fillStyle = this.isOpponentShot ? '#ef4444' : '#60a5fa'; // Red for opponent, blue for player
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 
