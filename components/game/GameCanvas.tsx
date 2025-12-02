@@ -17,7 +17,6 @@ export default function GameCanvas() {
   const [gameState, setGameState] = useState<GameState>('start');
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(PLAYER_LIVES);
-  const [loading, setLoading] = useState(false);
 
   const stopGame = useCallback(() => {
     if (animationFrameId.current) {
@@ -92,8 +91,8 @@ export default function GameCanvas() {
   const handleTouchStart = (event: any) => {
     if (gameInstanceRef.current && event.nativeEvent) {
       const touch = event.nativeEvent.touches?.[0];
-      if (touch) {
-        gameInstanceRef.current.setTouchDown(touch.pageX);
+      if (touch && touch.locationX !== undefined) {
+        gameInstanceRef.current.setTouchDown(touch.locationX);
       }
     }
   };
@@ -101,8 +100,8 @@ export default function GameCanvas() {
   const handleTouchMove = (event: any) => {
     if (gameInstanceRef.current && event.nativeEvent) {
       const touch = event.nativeEvent.touches?.[0];
-      if (touch) {
-        gameInstanceRef.current.setTouchDown(touch.pageX);
+      if (touch && touch.locationX !== undefined) {
+        gameInstanceRef.current.setTouchDown(touch.locationX);
       }
     }
   };
@@ -123,7 +122,7 @@ export default function GameCanvas() {
         onTouchEnd={handleTouchEnd}
       />
       {gameState === 'playing' && <GameHud score={score} lives={lives} />}
-      {gameState === 'start' && <StartScreen onStart={startGame} loading={loading} />}
+      {gameState === 'start' && <StartScreen onStart={startGame} loading={false} />}
       {(gameState === 'win' || gameState === 'game_over') && (
         <GameOverScreen onRestart={startGame} score={score} didWin={gameState === 'win'} />
       )}
