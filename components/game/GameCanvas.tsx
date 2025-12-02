@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import Canvas from 'react-native-canvas';
 import { Game, GameState } from '../../lib/game-engine/Game';
 import GameHud from './ui/GameHud';
@@ -12,6 +12,7 @@ export default function GameCanvas() {
   const gameInstanceRef = useRef<Game | null>(null);
   const animationFrameId = useRef<number>(0);
   const canvasRef = useRef<any>(null);
+  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
 
   const [gameState, setGameState] = useState<GameState>('start');
   const [score, setScore] = useState(0);
@@ -67,10 +68,25 @@ export default function GameCanvas() {
 
   const handleCanvas = (canvas: any) => {
     if (canvas) {
-      canvas.width = 800;
-      canvas.height = 600;
+      canvas.width = canvasSize.width;
+      canvas.height = canvasSize.height;
       canvasRef.current = canvas;
     }
+  };
+
+  const handleLayout = (event: any) => {
+    const { width, height } = event.nativeEvent.layout;
+    // Maintain 4:3 aspect ratio
+    const aspectRatio = 4 / 3;
+    let canvasWidth = width;
+    let canvasHeight = width / aspectRatio;
+    
+    if (canvasHeight > height) {
+      canvasHeight = height;
+      canvasWidth = height * aspectRatio;
+    }
+    
+    setCanvasSize({ width: Math.floor(canvasWidth), height: Math.floor(canvasHeight) });
   };
 
   const handleTouchStart = (event: any) => {
@@ -98,7 +114,7 @@ export default function GameCanvas() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={handleLayout}>
       <Canvas
         ref={handleCanvas}
         style={styles.canvas}
