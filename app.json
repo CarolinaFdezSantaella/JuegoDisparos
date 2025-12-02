@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Shape Shooter Showdown",
+    "slug": "shape-shooter-showdown",
+    "version": "1.0.0",
+    "orientation": "landscape",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shapeshooter.game"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#000000"
+      },
+      "package": "com.shapeshooter.game"
+    },
+    "web": {}
+  }
+}
